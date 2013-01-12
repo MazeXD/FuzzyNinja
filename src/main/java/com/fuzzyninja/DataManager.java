@@ -20,4 +20,14 @@ public class DataManager {
     {
 	return this.dataEntries;
     }
+    
+    public ClassData getData(String name)
+    {
+	if(this.dataEntries.containsKey(name))
+	{
+	    return this.dataEntries.get(name);
+	}
+	
+	return null;
+    }
 }

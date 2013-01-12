@@ -124,7 +124,7 @@ public class JarProcessor {
 		    // Remap class
 		    if (this.remapManager.hasRemaps()) {
 			if (remapper == null) {
-			    remapper = new Remapper(this.remapManager);
+			    remapper = new Remapper(this.remapManager, this.dataManager);
 			}
 
 			className = remapManager.remapClass(className);
