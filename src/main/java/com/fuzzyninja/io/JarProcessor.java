@@ -15,6 +15,7 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
@@ -97,20 +98,18 @@ public class JarProcessor {
 			    inJar.getInputStream(inEntry)));
 
 		    if (!inEntry.getName().endsWith(".class")) {
-			ZipEntry outEntry = (ZipEntry) inEntry.clone();
-			outJar.putNextEntry(outEntry);
-
-			byte[] buf = new byte[1024];
-			int len = 0;
-
-			do {
-			    len = inStream.read(buf);
-			    if (len > 0) {
-				outJar.write(buf, 0, len);
-			    }
-			} while (len > 0);
-
-			outJar.closeEntry();
+			outJar.putNextEntry(new ZipEntry(inEntry.getName()));
+			
+                        byte[] data = new byte[1024];
+                        int amount = inStream.read(data);
+                        
+                        while (amount > 0) {
+                            outJar.write(data, 0, amount);
+                            amount = inStream.read(data);
+                        }
+                        
+                        inStream.close();
+                        outJar.closeEntry();
 			continue;
 		    }
 
@@ -132,7 +131,7 @@ public class JarProcessor {
 			reader.accept(new RemappingClassAdapter(writer,
 				remapper), ClassReader.EXPAND_FRAMES);
 		    }
-
+		    
 		    ZipEntry outEntry = new ZipEntry(className + ".class");
 		    outJar.putNextEntry(outEntry);
 		    outJar.write(writer.toByteArray());
@@ -147,7 +146,9 @@ public class JarProcessor {
 	    }
 
 	    outJar.closeEntry();
-	} finally {
+	} catch(ZipException e) {
+	    e.printStackTrace();
+     	} finally {
 	    if (outJar != null) {
 		outJar.close();
 	    }

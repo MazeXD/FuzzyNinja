@@ -22,7 +22,7 @@ public class RemapManager {
     {
 	for(Entry<String, String> entry : packages.entrySet())
 	{
-	    if(name.startsWith(entry.getKey()) || name == "/")
+	    if(name.startsWith(entry.getKey()))
 	    {
 		if(name.startsWith(entry.getValue()))
 		{
@@ -31,6 +31,16 @@ public class RemapManager {
 		
 		return entry.getValue() + name.substring(entry.getKey().length(), name.length());
 	    }
+	    
+	    if(entry.getKey().equals("/") && !name.contains("/"))
+	    {
+		if(name.startsWith(entry.getValue()))
+		{
+		    return name;
+		}
+		
+		return entry.getValue() + name;
+	    }
 	}
 	
 	return name;
@@ -38,12 +48,22 @@ public class RemapManager {
     
     public String remapClass(String name)
     {
+	String additionalData = "";
+	
+	if(name.contains("$"))
+	{
+	    String[] pieces = name.split("\\$");
+
+	    additionalData = name.replace(pieces[0], "");
+	    name = pieces[0];
+	}
+	
 	if(classes.containsKey(name))
 	{
 	    name = classes.get(name);
 	}
 	
-	return remapPackage(name);
+	return remapPackage(name + additionalData);
     }
     
     public String remapMethod(String name, String method, String desc)
@@ -53,7 +73,7 @@ public class RemapManager {
 	    return method;
 	}
 	
-	String temp = name + "." + method + desc;
+	String temp = name + "/" + method + desc;
 	
 	if(methods.containsKey(temp))
 	{
@@ -65,7 +85,7 @@ public class RemapManager {
     
     public String remapField(String name, String field)
     {
-	String temp = name + "." + field;
+	String temp = name + "/" + field;
 	
 	if(fields.containsKey(temp))
 	{
@@ -87,6 +107,11 @@ public class RemapManager {
     {
 	nms = normalize(nms, true);
 	
+	if(nms.equals("/"))
+	{
+	    nms = "";
+	}
+	
 	from = nms + normalize(from);
 	to = nms + normalize(to);
 	
@@ -97,7 +122,7 @@ public class RemapManager {
     {
 	name = normalize(name);
 	
-	from = name + "." + from + desc;
+	from = name + "/" + from + desc;
 	
 	methods.put(from, to);
     }
@@ -106,7 +131,7 @@ public class RemapManager {
     {
 	name = normalize(name);
 	
-	from = name + "." + from;
+	from = name + "/" + from;
 	
 	fields.put(from, to);
     }

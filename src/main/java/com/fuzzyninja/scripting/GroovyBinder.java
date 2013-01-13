@@ -28,6 +28,7 @@ public class GroovyBinder {
 	this.binding.setVariable("dataManager", new ScriptedDataManager(dataManager));
 	this.binding.setVariable("fixManager", new ScriptedFixManager(fixManager));
 	this.binding.setVariable("remapper", new ScriptedRemapManager(remapManager));
+	this.binding.setVariable("scriptFolder", Main.getScriptsFolder());
 	this.binding.setVariable("logger", LOGGER);
     }
 

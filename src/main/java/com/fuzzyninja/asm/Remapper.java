@@ -21,7 +21,9 @@ public class Remapper extends org.objectweb.asm.commons.Remapper {
 	{
 	    ClassData data = dataManager.getData(owner);
 	    
-	    data = dataManager.getData(data.getSuperClass());
+	    if(data != null){
+		data = dataManager.getData(data.getSuperClass());
+	    }
 	    
 	    while(data != null)
 	    {
