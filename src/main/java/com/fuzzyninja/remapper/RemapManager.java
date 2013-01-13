@@ -22,7 +22,7 @@ public class RemapManager {
     {
 	for(Entry<String, String> entry : packages.entrySet())
 	{
-	    if(name.startsWith(entry.getKey()))
+	    if(name.startsWith(entry.getKey()) || name == "/")
 	    {
 		if(name.startsWith(entry.getValue()))
 		{
